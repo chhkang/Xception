@@ -10,6 +10,7 @@ class pre_flow(nn.Module):
         self.bn2 = nn.BatchNorm2d(64)
         self.conv3 = nn.Conv2d(64,128,kernel_size=3, padding=1)
         self.bn3 = nn.BatchNorm2d(128)
+        self.conv4 = nn.Conv2d(128,128,kernel_size=3, padding=1)
         self.shortcut = nn.Conv2d(64, 128, kernel_size=1, stride=2)
 
     def forward(self,x):
@@ -17,7 +18,7 @@ class pre_flow(nn.Module):
         out = F.relu(self.bn2(self.conv2(out)))
         s_out = self.shortcut(out)
         out = F.relu(self.bn3(self.conv3(out)))
-        out = self.bn3(self.conv3(F.relu(out)))
+        out = self.bn3(self.conv4(F.relu(out)))
         return s_out + out
 
 class entry_flow(nn.Module):
@@ -89,9 +90,7 @@ class XceptionNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = F.relu(self.bn2(self.conv2(out)))
-        out = self.Entry(out)
+        out = self.Entry(x)
         out = self.Middle(out)
         out = self.Exit(out)
         out = out.view(out.size(0),-1)
