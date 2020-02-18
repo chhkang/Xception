@@ -6,7 +6,7 @@ from os.path import isfile
 from collections import OrderedDict
 
 import torch
-
+import math
 
 def load_model(model, ckpt_file, args):
     if args.cuda:
@@ -100,12 +100,9 @@ class ProgressMeter(object):
 
 def adjust_learning_rate(optimizer, epoch, lr):
     """Sets the learning rate, decayed rate of 0.04 every 8 epoches"""
-    if epoch <=30:
-      lr = 0.05
-    elif epoch <=60:
-      lr = 0.01
-    else:
-      lr = 0.001
+    e = epoch//2
+    tmp = math.pow(0.94, e)
+    lr = lr*tmp
 
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
