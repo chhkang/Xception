@@ -49,29 +49,30 @@ class exit_flow(nn.Module):
 class XceptionNet(nn.Module):
     def __init__(self):
         super(XceptionNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=2)
-        self.Entry = nn.Sequential(
-            entry_flow(32, 128),
-            entry_flow(128, 256),
-            entry_flow(256, 728)
-        )
-        self.Middle = nn.Sequential(
-            middle_flow(),
-            middle_flow(),
-            middle_flow(),
-            middle_flow(),
-            middle_flow(),
-            middle_flow(),
-            middle_flow(),
-        )
-        self.Exit = nn.Sequential(
-            exit_flow(),
-        )
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=2, padding=1)
+        self.Entry = self._make_layer(1)
+        self.Middle = self._make_layer(2)
+        self.Exit = self._make_layer(3)
+
+    def _make_layer(self,type):
+        layers = []
+        if type == 1:
+            layers.append(entry_flow(32,128))
+            layers.append(entry_flow(128,256))
+            layers.append(entry_flow(256, 728))
+        elif type == 2:
+            for i in range(8):
+                layers.append(middle_flow())
+        elif type == 3:
+            layers.append(exit_flow())
+
+        return nn.Sequential(*layers)
 
     def forward(self, x):
         out = F.relu(self.conv1(x))
+        print(out.size())
         out = self.Entry(out)
         out = self.Middle(out)
         out = self.Exit(out)
         print(out.size())
-        return out;
+        return out
