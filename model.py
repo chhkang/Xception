@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class entry_flow(nn.module):
+class entry_flow(nn.Module):
     def __init__(self, input, output):
         super(entry_flow, self).__init__()
         self.conv1 = nn.Conv2d(input,output,kernel_size=3,padding=1)
@@ -15,7 +15,7 @@ class entry_flow(nn.module):
         out = nn.BatchNorm2d(self.conv2(F.relu(out)))
         x = self.shortcut(x)
         return out + x
-class middle_flow(nn.module):
+class middle_flow(nn.Module):
     def __init__(self):
         super(middle_flow,self).__init__()
         self.conv = nn.Conv2d(728,728,kernel_size=3,padding=1)
@@ -25,7 +25,7 @@ class middle_flow(nn.module):
         out = nn.BatchNorm2d(self.conv(F.relu(out)))
         out = nn.BatchNorm2d(self.conv(F.relu(out)))
         return out + x
-class exit_flow(nn.module):
+class exit_flow(nn.Module):
     def __init__(self):
         super(middle_flow,self).__init__()
         self.conv1 = nn.Conv2d(728,728,kernel_size=3,padding=1)
@@ -40,7 +40,7 @@ class exit_flow(nn.module):
         x = self.shortcut(x)
         return out + x
 
-class XceptionNet(nn.module):
+class XceptionNet(nn.Module):
     def __init__(self):
         super(XceptionNet, self).__init__()
         self.Entry = nn.Sequential(
