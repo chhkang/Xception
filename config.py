@@ -17,10 +17,10 @@ def config():
                         dest='lr')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum (default: 0.9)')
-    parser.add_argument('--wd', '--weight-decay', default=5e-4, type=float,
+    parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
                         metavar='W', help='weight decay (default: 5e-4)',
                         dest='weight_decay')
-    parser.add_argument('-p', '--print-freq', default=40, type=int,
+    parser.add_argument('-p', '--print-freq', default=50, type=int,
                         metavar='N', help='print frequency (default: 50)')
     parser.add_argument('--ckpt', default='', type=str, metavar='PATH',
                         help='Path of checkpoint for resuming/testing '
