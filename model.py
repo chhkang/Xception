@@ -18,20 +18,20 @@ class pre_flow(nn.Module):
         super(pre_flow,self).__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(32)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
         self.bn2 = nn.BatchNorm2d(64)
         self.conv3 = SeparableConv2d(64,128,kernel_size=3, padding=1)
         self.bn3 = nn.BatchNorm2d(128)
         self.conv4 = SeparableConv2d(128,128,kernel_size=3, padding=1)
         self.shortcut = nn.Conv2d(64, 128, kernel_size=1)
-        #self.maxpool = nn.MaxPool2d(kernel_size=3,stride=2,ceil_mode=True)
+        self.maxpool = nn.MaxPool2d(kernel_size=3,stride=2,ceil_mode=True)
     def forward(self,x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = F.relu(self.bn2(self.conv2(out)))
+        #out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(x)))
         s_out = self.shortcut(out)
         out = self.bn3(self.conv3(out))
         out = self.bn3(self.conv4(F.relu(out)))
-        #out = self.maxpool(out)
+        out = self.maxpool(out)
         return s_out + out
 
 class entry_flow(nn.Module):
