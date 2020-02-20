@@ -101,8 +101,8 @@ class XceptionNet(nn.Module):
         layers = []
         if type == 1:
             layers.append(pre_flow())
-            layers.append(entry_flow(False, 128, 256))
-            layers.append(entry_flow(False, 256, 728))
+            layers.append(entry_flow(128, 256))
+            layers.append(entry_flow(256, 728))
         elif type == 2:
             for i in range(8):
                 layers.append(middle_flow())
