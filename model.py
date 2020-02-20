@@ -24,17 +24,18 @@ class pre_flow(nn.Module):
         self.bn3 = nn.BatchNorm2d(128)
         self.conv4 = SeparableConv2d(128,128,kernel_size=3, padding=1)
         self.shortcut = nn.Conv2d(64, 128, kernel_size=1)
-
+        #self.maxpool = nn.MaxPool2d(kernel_size=3,stride=2,ceil_mode=True)
     def forward(self,x):
         out = F.relu(self.bn1(self.conv1(x)))
         out = F.relu(self.bn2(self.conv2(out)))
         s_out = self.shortcut(out)
-        out = F.relu(self.bn3(self.conv3(out)))
+        out = self.bn3(self.conv3(out))
         out = self.bn3(self.conv4(F.relu(out)))
+        #out = self.maxpool(out)
         return s_out + out
 
 class entry_flow(nn.Module):
-    def __init__(self, first, input, output):
+    def __init__(self, input, output):
         super(entry_flow, self).__init__()
         self.conv1 = SeparableConv2d(input, output, kernel_size=3, padding=1)
         self.conv2 = SeparableConv2d(output, output, kernel_size=3, padding=1)
@@ -52,8 +53,8 @@ class entry_flow(nn.Module):
 class middle_flow(nn.Module):
     def __init__(self):
         super(middle_flow, self).__init__()
-        self.conv = SeparableConv2d(512, 512, kernel_size=3, padding=1)
-        self.bn = nn.BatchNorm2d(512)
+        self.conv = SeparableConv2d(728, 728, kernel_size=3, padding=1)
+        self.bn = nn.BatchNorm2d(728)
 
     def forward(self, x):
         out = self.bn(self.conv(F.relu(x)))
@@ -65,12 +66,12 @@ class middle_flow(nn.Module):
 class exit_flow(nn.Module):
     def __init__(self):
         super(exit_flow, self).__init__()
-        self.conv1 = SeparableConv2d(512, 512, kernel_size=3, padding=1)
-        self.bn1 = nn.BatchNorm2d(512)
-        self.conv2 = SeparableConv2d(512, 1024, kernel_size=3, padding=1)
+        self.conv1 = SeparableConv2d(728, 728, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(728)
+        self.conv2 = SeparableConv2d(728, 1024, kernel_size=3, padding=1)
         self.bn2 = nn.BatchNorm2d(1024)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True)
-        self.shortcut = nn.Conv2d(512, 1024, kernel_size=1, stride=2)
+        self.shortcut = nn.Conv2d(728, 1024, kernel_size=1, stride=2)
         self.conv3 = SeparableConv2d(1024,2048,kernel_size=3,padding=1)
         self.bn3 = nn.BatchNorm2d(2048)
         self.avgpool = nn.AvgPool2d(kernel_size=2)
@@ -95,14 +96,13 @@ class XceptionNet(nn.Module):
         self.Entry = self._make_layer(1)
         self.Middle = self._make_layer(2)
         self.Exit = self._make_layer(3)
-        self.linear = nn.Linear(2048,100)
 
     def _make_layer(self,type):
         layers = []
         if type == 1:
             layers.append(pre_flow())
             layers.append(entry_flow(False, 128, 256))
-            layers.append(entry_flow(False, 256, 512))
+            layers.append(entry_flow(False, 256, 728))
         elif type == 2:
             for i in range(8):
                 layers.append(middle_flow())
